@@ -115,14 +115,20 @@ local function make_installer()
     return {
       is_installed = util.has_bins(bin_name) or util.path.exists(bin);
       install_dir = install_dir;
-      cmd = {util.has_bins(bin_name) and bin_name or bin , "--background-index"};
+      bin = {util.has_bins(bin_name) and bin_name or bin};
+      args = {"--background_index"}
     }
   end
 
   function X.configure(config)
     local install_info = X.info()
     if install_info.is_installed then
-      config.cmd = install_info.cmd
+      local cmd = config.cmd or install_info.bin
+      local args = config.args or install_info.args
+      for _,v in ipairs(args) do
+        table.insert(cmd,v)
+      end
+      config.cmd = cmd
     end
   end
   return X
